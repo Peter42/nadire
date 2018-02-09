@@ -13,9 +13,9 @@ import (
 const BUFFERSIZE = 1024 * 1024
 
 const randomStringContent = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:"; // length of 64
-func getRandomString(buffer []byte){
+func getRandomString(buffer []byte, rng *rand.Rand){
 	for i := range buffer {
-        buffer[i] = randomStringContent[rand.Int() & 63]
+        buffer[i] = randomStringContent[rng.Int() & 63]
     }
 }
 
@@ -60,13 +60,15 @@ func handler(rw http.ResponseWriter, r *http.Request) {
 	rw.Header()["Content-Type"] = []string{"text/plain"}
 	rw.Header()["Content-Length"] = []string{strconv.Itoa(sizeInByte)}
 	
+    rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	
 	buffer := make([]byte, BUFFERSIZE)
 	restSizeInByte := sizeInByte
 	for (restSizeInByte > 0) {
 		if(restSizeInByte < BUFFERSIZE) {
 			buffer = buffer[:restSizeInByte]
 		}
-		getRandomString(buffer)
+		getRandomString(buffer, rng)
 		restSizeInByte -= len(buffer)
 		rw.Write(buffer)
 	}
