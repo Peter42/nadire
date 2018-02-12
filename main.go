@@ -9,14 +9,14 @@ import (
 	"time"
 )
 
-const BUFFERSIZE = 1024 * 1024
+const buffersize = 1024 * 1024
 
 const randomStringContent = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:" // length of 64
 func getRandomString(buffer []byte, rng *rand.Rand) {
-	req_size := len(buffer)
+	reqSize := len(buffer)
 
 	i := 0
-	for ; i+10 < req_size; i += 10 {
+	for ; i+10 < reqSize; i += 10 {
 		rnum := rng.Uint64()
 		for j := 0; j < 10; j++ {
 			b := randomStringContent[rnum&63]
@@ -25,7 +25,7 @@ func getRandomString(buffer []byte, rng *rand.Rand) {
 		}
 	}
 
-	for ; i < req_size; i++ {
+	for ; i < reqSize; i++ {
 		buffer[i] = randomStringContent[rng.Uint32()&63]
 	}
 }
@@ -72,10 +72,10 @@ func handler(rw http.ResponseWriter, r *http.Request) {
 
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	buffer := make([]byte, BUFFERSIZE)
+	buffer := make([]byte, buffersize)
 	restSizeInByte := sizeInByte
 	for restSizeInByte > 0 {
-		if restSizeInByte < BUFFERSIZE {
+		if restSizeInByte < buffersize {
 			buffer = buffer[:restSizeInByte]
 		}
 		getRandomString(buffer, rng)
