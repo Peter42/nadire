@@ -13,8 +13,20 @@ const BUFFERSIZE = 1024 * 1024
 
 const randomStringContent = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:" // length of 64
 func getRandomString(buffer []byte, rng *rand.Rand) {
-	for i := range buffer {
-		buffer[i] = randomStringContent[rng.Int()&63]
+	req_size := len(buffer)
+
+	i := 0
+	for ; i+10 < req_size; i += 10 {
+		rnum := rng.Uint64()
+		for j := 0; j < 10; j++ {
+			b := randomStringContent[rnum&63]
+			buffer[i+j] = b
+			rnum >>= 6
+		}
+	}
+
+	for ; i < req_size; i++ {
+		buffer[i] = randomStringContent[rng.Uint32()&63]
 	}
 }
 
