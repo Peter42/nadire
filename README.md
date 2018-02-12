@@ -1,4 +1,6 @@
 # Nadire - the Random Data Server (WIP)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Peter42/nadire)](https://goreportcard.com/report/github.com/Peter42/nadire)
+
 **Disclaimer**
 This is one of my first times using Go.
 Don't expect good (or even average) code quality and feel free to open bug on bad code smell.
