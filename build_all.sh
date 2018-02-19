@@ -10,28 +10,8 @@ mkdir build
 # feel free to create a pull request for additional targets
 targets="linux_386 linux_amd64 linux_arm linux_arm64 windows_386 windows_amd64 darwin_386 darwin_amd64"
 
-function get_extension() {
-	case $target_os in
-	"windows")
-		target_extension=".exe"
-		;;
-	*)
-		target_extension=""
-		;;
-	esac
-}
-
-
-
 for target in $targets; do
-	
 	target_arch=$(echo $target | sed 's:^[a-z0-9]*_::' )
 	target_os=$(echo $target | sed 's:_[a-z0-9]*::' )
-	get_extension
-	
-	export GOOS=$target_os
-	export GOARCH=$target_arch
-	target="build/nadire-$target_os-$target_arch$target_extension"
-	echo "Building $target"
-	go build -o $target
+	./build.sh $target_os $target_arch
 done
