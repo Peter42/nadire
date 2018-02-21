@@ -1,3 +1,4 @@
+#!/bin/bash
 if [[ $# -eq 2 ]]; then
 	target_os=$1
 	target_arch=$2
