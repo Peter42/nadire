@@ -14,6 +14,7 @@ const buffersize = 1024 * 1024
 func handler(rw http.ResponseWriter, r *http.Request) {
 	strDelay := r.URL.Query().Get("delay")
 	strSize := r.URL.Query().Get("size")
+	strRaw := r.URL.Query().Get("raw")
 
 	sizeInByte := 42
 	if len(strSize) > 0 {
@@ -45,6 +46,9 @@ func handler(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	contentType := "text/plain"
+	if strRaw == "true" {
+		contentType = "application/octet-stream"
+	}
 
 	fmt.Println("Got request with delay: " + strconv.Itoa(delay) + ", size: " + strconv.Itoa(sizeInByte) + " and content-type: " + contentType)
 

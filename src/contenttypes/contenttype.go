@@ -5,6 +5,13 @@ type ContentType interface {
 }
 
 func GetContentTypeImplementation(contenttypeName string) ContentType {
-	implementation := newPlaintext()
+	var implementation ContentType
+
+	if contenttypeName == "text/plain" {
+		implementation = newPlaintext()
+	} else if contenttypeName == "application/octet-stream" {
+		implementation = newRawdata()
+	}
+
 	return implementation
 }
