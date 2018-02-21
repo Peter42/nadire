@@ -1,8 +1,8 @@
 package main
 
 import (
+	"./contenttypes"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -10,25 +10,6 @@ import (
 )
 
 const buffersize = 1024 * 1024
-
-const randomStringContent = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.:" // length of 64
-func getRandomString(buffer []byte, rng *rand.Rand) {
-	reqSize := len(buffer)
-
-	i := 0
-	for ; i+10 < reqSize; i += 10 {
-		rnum := rng.Uint64()
-		for j := 0; j < 10; j++ {
-			b := randomStringContent[rnum&63]
-			buffer[i+j] = b
-			rnum >>= 6
-		}
-	}
-
-	for ; i < reqSize; i++ {
-		buffer[i] = randomStringContent[rng.Uint32()&63]
-	}
-}
 
 func handler(rw http.ResponseWriter, r *http.Request) {
 	strDelay := r.URL.Query().Get("delay")
@@ -63,22 +44,23 @@ func handler(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	fmt.Println("Got request with delay: " + strconv.Itoa(delay) + " and size: " + strconv.Itoa(sizeInByte))
+	contentType := "text/plain"
+
+	fmt.Println("Got request with delay: " + strconv.Itoa(delay) + ", size: " + strconv.Itoa(sizeInByte) + " and content-type: " + contentType)
 
 	time.Sleep(time.Duration(delay) * time.Millisecond)
 
-	rw.Header()["Content-Type"] = []string{"text/plain"}
+	rw.Header()["Content-Type"] = []string{contentType}
 	rw.Header()["Content-Length"] = []string{strconv.Itoa(sizeInByte)}
 
-	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
-
 	buffer := make([]byte, buffersize)
+	contentTypeHandler := contenttypes.GetContentTypeImplementation(contentType)
 	restSizeInByte := sizeInByte
 	for restSizeInByte > 0 {
 		if restSizeInByte < buffersize {
 			buffer = buffer[:restSizeInByte]
 		}
-		getRandomString(buffer, rng)
+		contentTypeHandler.FillBuffer(buffer)
 		restSizeInByte -= len(buffer)
 		rw.Write(buffer)
 	}
