@@ -3,6 +3,7 @@ package main
 import (
 	"./contenttypes"
 	"fmt"
+	"github.com/golang/gddo/httputil"
 	"net/http"
 	"os"
 	"strconv"
@@ -45,7 +46,7 @@ func handler(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	contentType := "text/plain"
+	contentType := httputil.NegotiateContentType(r, []string{"text/plain", "application/octet-stream"}, "text/plain")
 	if strRaw == "true" {
 		contentType = "application/octet-stream"
 	}
